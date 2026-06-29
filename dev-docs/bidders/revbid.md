@@ -1,41 +1,106 @@
 ---
 layout: bidder
 title: RevBid
-description: RevBid Adaptor
+description: Prebid RevBid Bidder Adapter
 biddercode: revbid
-aliasCode: adkernel
+aliasCode: bidfabrik
 tcfeu_supported: true
-dsa_supported: false
-gvl_id: 14 (adkernel)
+gvl_id: 1588
 usp_supported: true
-coppa_supported: true
-gpp_sids: tcfeu, usp
+gpp_sids: tcfeu, tcfca, usnat, usstate_all, usp
+coppa_supported: false
 schain_supported: true
 dchain_supported: false
 userId: all
 media_types: banner, video, native
 safeframes_ok: true
-deals_supported: false
+deals_supported: true
 floors_supported: true
 fpd_supported: true
 pbjs: true
 pbs: false
-pbs_app_supported: false
 prebid_member: false
-multiformat_supported: will-bid-on-any
-ortb_blocking_supported: true
+multiformat_supported: will-bid-on-one
+ortb_blocking_supported: false
 privacy_sandbox: no
-sidebarType: 1
+sideload_disabled: false
 ---
 
-### Note
+### Registration
 
-The RevBid bidding adapter requires setup and approval before implementation. Please reach out to <prebid@revbid.net> for more details.
+To use the RevBid adapter, contact [prebid@revbid.net](mailto:prebid@revbid.net) to obtain a Feed ID.
 
 ### Bid Params
 
 {: .table .table-bordered .table-striped }
-| Name     | Scope    | Description           | Example                   | Type     |
-|----------|----------|-----------------------|---------------------------|----------|
-| `host`   | required | RTB host | `'cpm.revbid.net'` | `string` |
-| `zoneId` | required | Zone Id           | 30164                 | `integer` |
+| Name   | Scope    | Description                                       | Example              | Type     |
+|--------|----------|---------------------------------------------------|----------------------|----------|
+| `feed` | required | Feed identifier assigned to your account          | `'pub-4417'`         | `string` |
+| `host` | optional | Custom RTB host (defaults to `bid.bidfabrik.com`) | `'us.bidfabrik.com'` | `string` |
+
+### Banner Example
+
+```javascript
+var adUnits = [{
+  code: 'banner-div',
+  mediaTypes: {
+    banner: { sizes: [[300, 250], [728, 90]] }
+  },
+  bids: [{
+    bidder: 'revbid',
+    params: { feed: 'pub-4417' }
+  }]
+}];
+```
+
+### Video Example
+
+```javascript
+var adUnits = [{
+  code: 'video-div',
+  mediaTypes: {
+    video: {
+      context: 'instream',
+      playerSize: [[640, 480]],
+      mimes: ['video/mp4'],
+      protocols: [2, 3, 5, 6]
+    }
+  },
+  bids: [{
+    bidder: 'revbid',
+    params: { feed: 'pub-4417' }
+  }]
+}];
+```
+
+### Native Example
+
+```javascript
+var adUnits = [{
+  code: 'native-div',
+  mediaTypes: {
+    native: {
+      title: { required: true },
+      image: { required: true, sizes: [[300, 250]] },
+      body: { required: false }
+    }
+  },
+  bids: [{
+    bidder: 'revbid',
+    params: { feed: 'pub-4417' }
+  }]
+}];
+```
+
+### User Syncing
+
+```javascript
+pbjs.setConfig({
+  userSync: {
+    filterSettings: {
+      iframe: { bidders: ['revbid'], filter: 'include' },
+      image:  { bidders: ['revbid'], filter: 'include' }
+    }
+  }
+});
+```
